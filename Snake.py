@@ -1,6 +1,9 @@
 from turtle import Screen,Turtle
-
+import time
 import random
+
+turtle_colors = ["white", "black", "gray", "red", "orange", "yellow", "green", "blue", "indigo", "violet", "brown", "pink", "cyan", "magenta", "purple", "turquoise", "gold", "silver"]
+
 class Snake:
     def __init__(self):
         self.Turtles = [Turtle() for _ in range(5)]
@@ -9,10 +12,23 @@ class Snake:
         self.food = self.generate_food()
         self.Player_score = 0
         self.score = Turtle()
+        self.score.clear()
+        self.score.hideturtle()
+        self.score.penup()
+        self.score.goto(0, 270)
+        self.score.color("red")
+        self.highscore = 0
         self.score_counter()
+        
         
     
     colors = ["red","blue","green","orange","cyan","brown","yellow"]
+    
+    def create_snakes(self):
+        self.Turtles = [Turtle() for _ in range(5)]
+        self.align()
+    
+    
     def align(self):
         for i, T in enumerate(self.Turtles):
             T.penup()
@@ -36,30 +52,35 @@ class Snake:
     def Snake_forward(self):
         for i in range(len(self.Turtles)-1,0,-1):
             if i%2 == 0 and not i == 0:
-                self.Turtles[i].color("orange")
+                self.Turtles[i].color("red")
             xcor = self.Turtles[i-1].xcor()
             ycor = self.Turtles[i-1].ycor()
             self.Turtles[i].goto(xcor,ycor)
         self.Turtles[0].forward(20)
         
+        self.Snake_out_of_bounds()
 
     def Snake_up(self):
         if not self.Turtles[0].heading() == 270:
+            
             self.Turtles[0].setheading(90)
 
 
     def Snake_down(self):
         if not self.Turtles[0].heading() == 90:
+            
             self.Turtles[0].setheading(270)
         
 
     def Snake_left(self):
         if not self.Turtles[0].heading() == 0:
+            
             self.Turtles[0].setheading(180)
         
 
     def Snake_right(self):
         if not self.Turtles[0].heading() == 180:
+            
             self.Turtles[0].setheading(0)
     
     def Snake_length(self):
@@ -101,14 +122,21 @@ class Snake:
         turtle.write("Game Over", align="center", font=("Arial", 24, "normal"))
         turtle.goto(0, -30)
         turtle.write(f"Your Final Score = {self.Player_score}", align="center", font=("Arial", 16, "normal"))
-        
+    
+    def reset(self):
+        for T in self.Turtles:
+            T.clear()
+            T.goto(1000,1000)
+        self.Turtles.clear()
+        self.create_snakes()
+        self.Player_score = 0
+    
     def score_counter(self):
-        self.score.hideturtle()
-        self.score.penup()
-        self.score.goto(0, 270)
-        self.score.color("red")
-        player_score = f"Your Score = {self.Player_score}"
-        self.score.write(player_score, align="center", font=("Arial", 12, "normal"))
+        self.score.clear()
+        if self.Player_score > self.highscore:
+            self.highscore = self.Player_score
+        text = f"Your Score = {self.Player_score} , HighScore = {self.highscore}"
+        self.score.write(text, align="center", font=("Arial", 12, "normal"))
         
     
     def Snake_collision_check(self):
@@ -116,8 +144,11 @@ class Snake:
         for i in range(len(self.Turtles)-1):
             body_postion = self.Turtles[i].pos()
             if abs(head_position[0] - body_postion[0])<15 and abs(head_position[1]-body_postion[1]) <15 and not i == 0:
-                self.game_over()
                 return True
+    
+    
+                
+            
     
     def Food_eaten(self):
         if self.food_on_screen:
@@ -132,5 +163,4 @@ class Snake:
                     
     def Score_increment(self):
         self.Player_score += 10
-        self.score.clear()
-        self.score_counter()
+        
