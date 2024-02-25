@@ -18,6 +18,7 @@ class Snake:
         self.score.goto(0, 270)
         self.score.color("red")
         self.highscore = 0
+        self.read_highscore()
         self.score_counter()
         
         
@@ -60,6 +61,15 @@ class Snake:
         
         self.Snake_out_of_bounds()
 
+    def read_highscore(self):
+        with open("D:\SnakeGame\data.txt") as line:
+            highscore = line.read()
+            self.highscore = highscore
+    def update_highscore(self):
+        with open("D:\SnakeGame\data.txt", mode="w") as line:
+            line.write(self.highscore)
+    
+    
     def Snake_up(self):
         if not self.Turtles[0].heading() == 270:
             
@@ -133,8 +143,9 @@ class Snake:
     
     def score_counter(self):
         self.score.clear()
-        if self.Player_score > self.highscore:
-            self.highscore = self.Player_score
+        if self.Player_score > int(self.highscore):
+            self.highscore = str(self.Player_score)
+            self.update_highscore()
         text = f"Your Score = {self.Player_score} , HighScore = {self.highscore}"
         self.score.write(text, align="center", font=("Arial", 12, "normal"))
         
